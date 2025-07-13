@@ -1,0 +1,175 @@
+import { useEffect, useState, useReducer } from 'react'
+import Gun from 'gun'
+import { useLocation, Navigate } from 'react-router-dom';
+import { VoiceMessage } from '../Components/VoiceMessage.js'
+
+// initialize gun locally
+// sync with as many peers as you would like by passing in an array of network uris
+const gun = Gun({
+  peers: [
+    'http://localhost:3030/gun'
+  ]
+})
+
+// create the initial state to hold the messages
+const initialState = {
+  messages: []
+}
+
+// Create a reducer that will update the messages array
+function reducer(state, newMessage) {
+  // Check if message with this id already exists
+  if (state.messages.find(msg => msg.id === newMessage.id)) {
+    return state; // no change, avoid duplicate
+  }
+
+  // Add new message at the front
+  return {
+    messages: [newMessage, ...state.messages]
+  }
+}
+
+function Messaging() {
+  // the form state manages the form input for creating a new message
+  const location = useLocation()
+  const { username, password } = location.state || {}
+  const [voiceKey, setVoiceKey] = useState(0);
+
+  // Redirect if no user data (protect route)
+  
+  const [formState, setForm] = useState({
+    name: username, message: '', file: null
+  })
+
+  // initialize the reducer & state for holding the messages array
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  // when the app loads, fetch the current messages and load them into the state
+  // this also subscribes to new data as it changes and updates the local state
+  useEffect(() => {
+    const messages = gun.get('messages');
+    const seen = new Set();
+
+    messages.map().once(m => {
+        if (!m) return;
+
+        // Use Gun's internal unique ID, or fallback to timestamp
+        const id = m._?.['#'] || m.createdAt;
+        
+        if (!seen.has(id)) {
+        seen.add(id);
+        dispatch({
+            name: m.name,
+            message: m.message,
+            createdAt: m.createdAt,
+            group: m.group,
+            upload: m.upload,
+            fileName: m.fileName,
+            id
+        });
+        }
+    });
+  }, []);
+
+  if (!username || !password) {
+    return <Navigate to="/" replace />
+  }
+
+  // set a new message in gun, update the local state to reset the form field
+  async function saveMessage() {
+    if (!formState.message.trim()) {
+      alert("Message text is required");
+      return;
+    }
+    let upload = null;
+    if (formState.file) {
+      upload = await toBase64(formState.file);
+    }
+    const messages = gun.get('messages');
+    messages.set({
+      name: formState.name,
+      message: formState.message,
+      createdAt: Date.now(),
+      group: password,
+      upload,
+      fileName: formState.file ? formState.file.name : null
+    });
+    setForm({
+      name: username,
+      message: '',
+      file: null
+    });
+    setVoiceKey(prev => prev + 1);
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  function handleVoiceRecording(file) {
+    setForm(prev => ({ ...prev, file }));
+  }
+
+  // update the form state as the user types
+  function onChange(e) {
+    if(e.target.type === "file") {
+      setForm({ ...formState, [e.target.name]: e.target.files[0]  })
+    }
+    else {
+      setForm({ ...formState, [e.target.name]: e.target.value  })
+    }
+  }
+
+  return (
+    <div style={{ padding: 30 }}>
+      <input
+        onChange={onChange}
+        placeholder="Message"
+        name="message"
+        value={formState.message}
+      />
+      <VoiceMessage key={voiceKey} onRecordingComplete={handleVoiceRecording} />
+      <input 
+        type="file" 
+        onChange={onChange}
+        name="file"
+      />
+      <button onClick={saveMessage}>Send Message</button>
+      {
+        state.messages
+          .filter(message => message.group === password)
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .map(message => (
+            <div key={message.id} style={{ marginBottom: 20 }}>
+              <h2>{message.message}</h2>
+              <h3>From: {message.name}</h3>
+              <p>Date: {new Date(message.createdAt).toLocaleString()}</p>
+              <p>Group: {message.group}</p>
+              {message.upload && (
+                <div>
+                  <p>File:</p>
+                  {message.upload.startsWith('data:image') ? (
+                    <img src={message.upload} alt="Uploaded" style={{ maxWidth: '300px' }} />
+                  ) : message.upload.startsWith('data:audio') ? (
+                    <audio controls src={message.upload} />
+                  ) : (
+                    <a href={message.upload} download={message.fileName}>
+                      {message.fileName}
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+      }
+
+    </div>
+  );
+}
+
+export {Messaging}

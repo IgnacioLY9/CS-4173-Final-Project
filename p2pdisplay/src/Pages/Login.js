@@ -1,0 +1,43 @@
+import { useState } from "react"
+import { Navigate, useNavigate } from "react-router-dom"
+
+function Login() {
+
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const navigate = useNavigate()
+
+    function signin(e) {
+        e.preventDefault()
+
+        if (!username.trim() || !password.trim()) {
+            alert("Both username and password are required.");
+            return;
+        }
+        console.log(username)
+        console.log(password)
+
+        navigate("/Messaging", { state: { username, password } })
+    }
+
+    function changeUser(e) {
+        setUsername(e.target.value)
+    }
+
+    function changePassword(e) {
+        setPassword(e.target.value)
+    }
+
+
+    return (
+        <form onSubmit={signin}>
+            <input id="Username" name="username" className="textbox textbox--gray" type="text" placeholder="Username" 
+            title="Name that will be displayed" required="" autoFocus="" onChange={changeUser}/>
+            <input id="Password" name="password" className="textbox textbox--gray" type="password" placeholder="Password" 
+            title="Password" required="" autoFocus="" onChange={changePassword}/>
+            <input className="button" type="submit" value="Sign In" title="submit"></input>
+        </form>
+    )
+}
+
+export {Login}
