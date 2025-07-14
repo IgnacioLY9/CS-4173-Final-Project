@@ -1,0 +1,27 @@
+.Container {
+    display: flex;
+    background-color: blueviolet;
+    height: 100vh;
+    align-items: center;
+}
+
+.SignInBlock {
+    margin: auto;
+    display: flex;
+    background-color: #af9ff4;
+    width: 60%;
+    height: 80%;
+    align-items: center;
+}
+
+.InputContainer {
+    margin: auto;
+    width: 50%;
+    display: block;
+}
+
+.textbox {
+    margin: auto;
+    width: 50%;
+    display: block;
+}
