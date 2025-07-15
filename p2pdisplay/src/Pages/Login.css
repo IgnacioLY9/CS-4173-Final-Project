@@ -1,27 +1,58 @@
 .Container {
     display: flex;
     background-color: blueviolet;
-    height: 100vh;
-    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.Title {
+    color: white;
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.Logo {
+    max-height: 50vh;
+    margin: auto;
+    width: 60%;
+    display: flex;
+    margin-bottom: 80px;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    
 }
 
 .SignInBlock {
-    margin: auto;
-    display: flex;
+    display: block;
     background-color: #af9ff4;
-    width: 60%;
-    height: 80%;
     align-items: center;
+    height: 80vh;
+    margin-top: 10vh;
+    min-height: 450px;
 }
 
 .InputContainer {
     margin: auto;
-    width: 50%;
+    width: 100%;
     display: block;
 }
 
 .textbox {
     margin: auto;
-    width: 50%;
+    margin-top: 5px;
+    width: 65%;
     display: block;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.enterButton {
+    margin: auto;
+    display: block;
+    width: 50%;
+    height: 6%;
+    background-color: blueviolet;
+    margin-top: 10px;
+    border: black;
+    border-radius: 4px;
 }

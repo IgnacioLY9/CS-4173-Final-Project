@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import './Login.css'
+import logo from '../logo.png'
 
 function Login() {
 
@@ -33,12 +34,14 @@ function Login() {
     return (
         <div className="Container">
             <div className = "SignInBlock">
+                <img src={logo} className="Logo" alt="logo" />
+                <h4 className="Title">Not Secure Secure Messaging</h4>
                 <form onSubmit={signin} className="InputContainer">
                     <input id="Username" name="username" className="textbox" type="text" placeholder="Username" 
                     title="Name that will be displayed" required="" autoFocus="" onChange={changeUser}/>
                     <input id="Password" name="password" className="textbox" type="password" placeholder="Password" 
                     title="Password" required="" autoFocus="" onChange={changePassword}/>
-                    <input className="button" type="submit" value="Sign In" title="submit"></input>
+                    <input className="enterButton" type="submit" value="Sign In" title="submit"></input>
                 </form>
             </div>
         </div>
