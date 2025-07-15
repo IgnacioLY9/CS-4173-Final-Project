@@ -3,49 +3,37 @@ import Gun from 'gun'
 import { useLocation, Navigate } from 'react-router-dom';
 import { VoiceMessage } from '../Components/VoiceMessage.js'
 
-// initialize gun locally
-// sync with as many peers as you would like by passing in an array of network uris
 const gun = Gun({
   peers: [
     'http://localhost:3030/gun'
   ]
 })
 
-// create the initial state to hold the messages
 const initialState = {
   messages: []
 }
 
-// Create a reducer that will update the messages array
 function reducer(state, newMessage) {
-  // Check if message with this id already exists
   if (state.messages.find(msg => msg.id === newMessage.id)) {
-    return state; // no change, avoid duplicate
+    return state;
   }
 
-  // Add new message at the front
   return {
     messages: [newMessage, ...state.messages]
   }
 }
 
 function Messaging() {
-  // the form state manages the form input for creating a new message
   const location = useLocation()
   const { username, password } = location.state || {}
   const [voiceKey, setVoiceKey] = useState(0);
-
-  // Redirect if no user data (protect route)
   
   const [formState, setForm] = useState({
     name: username, message: '', file: null
   })
 
-  // initialize the reducer & state for holding the messages array
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // when the app loads, fetch the current messages and load them into the state
-  // this also subscribes to new data as it changes and updates the local state
   useEffect(() => {
     const messages = gun.get('messages');
     const seen = new Set();
@@ -53,7 +41,6 @@ function Messaging() {
     messages.map().once(m => {
         if (!m) return;
 
-        // Use Gun's internal unique ID, or fallback to timestamp
         const id = m._?.['#'] || m.createdAt;
         
         if (!seen.has(id)) {
@@ -75,7 +62,6 @@ function Messaging() {
     return <Navigate to="/" replace />
   }
 
-  // set a new message in gun, update the local state to reset the form field
   async function saveMessage() {
     if (!formState.message.trim()) {
       alert("Message text is required");
@@ -115,7 +101,6 @@ function Messaging() {
     setForm(prev => ({ ...prev, file }));
   }
 
-  // update the form state as the user types
   function onChange(e) {
     if(e.target.type === "file") {
       setForm({ ...formState, [e.target.name]: e.target.files[0]  })
