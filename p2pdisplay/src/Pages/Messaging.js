@@ -111,6 +111,7 @@ function Messaging() {
 
   function onChange(e) {
     if(e.target.type === "file") {
+      console.log("Selected file:", e.target.files[0]);
       setForm({ ...formState, [e.target.name]: e.target.files[0]  })
     }
     else {
