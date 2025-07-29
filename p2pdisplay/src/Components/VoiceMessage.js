@@ -65,20 +65,12 @@ function VoiceMessage
     }
 
   return (
-    <div className='w-full h-screen flex flex-col items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 gap-4'>
-
-    <h1 className='text-white text-[60px] font-black'>
-        Recorder
-    </h1>
-
-        <h2 className='text-[100px] text-white bg-black p-4 rounded-lg mx-4'>
-            {formatTime(seconds)}
-        </h2>
+    <div>
 
         {isRecording ? <button onClick={stopRecording} className='flex items-center justify-center text-[60px] bg-red-500 rounded-full p-4 text-white w-[100px] h-[100px]'>
             Stop
         </button> : 
-            <button onClick={startRecording} className='flex items-center justify-center text-[60px] bg-blue-500 rounded-full p-4 text-white w-[100px] h-[100px]'>
+            <button onClick={startRecording}>
                 Mic
             </button>
         }
