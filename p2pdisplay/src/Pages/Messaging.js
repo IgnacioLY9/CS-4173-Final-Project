@@ -2,7 +2,9 @@ import { useEffect, useState, useReducer } from 'react'
 import Gun from 'gun'
 import { useLocation, Navigate } from 'react-router-dom';
 import { VoiceMessage } from '../Components/VoiceMessage.js'
+import { DecryptedMessage } from '../Components/DecryptedMessage.js';
 import '../Styling/Messaging.css'
+import CryptoJS from "crypto-js"
 
 const gun = Gun({
   peers: [
@@ -24,9 +26,20 @@ function reducer(state, newMessage) {
   }
 }
 
+function encryptData(plaintext, cipher, key) {
+  if (cipher === 'DES') {
+    return CryptoJS.DES.encrypt(plaintext, key).toString();
+  }
+  else {
+    return CryptoJS.AES.encrypt(plaintext, key).toString();
+  }
+}
+
 function Messaging() {
   const location = useLocation()
-  const { username, password } = location.state || {}
+  const { username, hashedPassword, cipher } = location.state || {}
+  const password = hashedPassword;
+  const group = CryptoJS.SHA512(password).toString();
   const [voiceKey, setVoiceKey] = useState(0);
   
   const [formState, setForm] = useState({
@@ -54,6 +67,7 @@ function Messaging() {
             uploadAudio: m.uploadAudio,
             uploadFile: m.uploadFile,
             fileName: m.fileName,
+            cipher: m.cipher,
             id
         });
         }
@@ -65,27 +79,32 @@ function Messaging() {
   }
 
   async function saveMessage() {
-    if (!formState.message.trim()) {
-      alert("Message text is required");
+    if (!formState.message.trim() && !formState.file && !formState.audio) {
+      alert("Input is required");
       return;
     }
+    let uploadMessage = encryptData(formState.message, cipher, password);
     let uploadFile = null;
     if (formState.file) {
-      uploadFile = await toBase64(formState.file);
+      let file64 = await toBase64(formState.file);
+      uploadFile = encryptData(file64, cipher, password);
+      //uploadFile = file64;
     }
     let uploadAudio = null;
     if (formState.audio) {
-      uploadAudio = await toBase64(formState.audio);
+      let audio64 = await toBase64(formState.audio);
+      uploadAudio = encryptData(audio64, cipher, password);
     }
     const messages = gun.get('messages');
     messages.set({
       name: formState.name,
-      message: formState.message,
+      message: uploadMessage,
       createdAt: Date.now(),
-      group: password,
+      group: group,
       uploadFile,
       uploadAudio,
-      fileName: formState.file ? formState.file.name : null
+      cipher: cipher,
+      fileName: formState.file ? encryptData(formState.file.name, cipher, password) : null
     });
     setForm({
       name: username,
@@ -111,7 +130,6 @@ function Messaging() {
 
   function onChange(e) {
     if(e.target.type === "file") {
-      console.log("Selected file:", e.target.files[0]);
       setForm({ ...formState, [e.target.name]: e.target.files[0]  })
     }
     else {
@@ -135,37 +153,12 @@ function Messaging() {
 
       {
         state.messages
-          .filter(message => message.group === password)
+          .filter(message => message.group === group && message.cipher === cipher)
           .sort((a, b) => b.createdAt - a.createdAt)
           .map(message => (
-            <div key={message.id} style={{ marginBottom: 20 }}>
-              <h2>{message.message}</h2>
-              <h3>From: {message.name}</h3>
-              <p>Date: {new Date(message.createdAt).toLocaleString()}</p>
-              <p>Group: {message.group}</p>
-              {message.uploadFile && (
-                <div>
-                  <p>File:</p>
-                    {message.uploadFile.startsWith('data:image') ? (
-                      <img src={message.uploadFile} alt="Uploaded" style={{ maxWidth: '300px' }} />
-                    ) : (
-                      <a href={message.uploadFile} download={message.fileName}>
-                        {message.fileName}
-                      </a>
-                    )}
-                </div>
-              )}
-              {message.uploadAudio && (
-                <div>
-                  <p>Voice Message:</p>
-                  <audio controls src={message.uploadAudio} />
-                </div>
-              )}
-              
-            </div>
+            <DecryptedMessage key={message.id} message={message} password={password} />
           ))
       }
-
     </div>
   );
 }
