@@ -9,7 +9,7 @@ Only people in the same group can send messages to each other.
 1. Move to the unzipped directory.
 
 ```sh
-cd /path/to/unzipped/folder/P2P-MAIN
+cd /path/to/unzipped/folder/P2P-main
 ```
 
 2. Install the dependencies for the Express server
@@ -27,9 +27,9 @@ npm install
 
 4. Launching the application
 
-Open a second terminal. In one of the terminals, maneuver to the P2P-MAIN directory. In the second, move to the P2P-MAIN/p2pdisplay directory
+Open a second terminal. In one of the terminals, maneuver to the P2P-main directory. In the second, move to the P2P-main/p2pdisplay directory
 
-P2P-MAIN terminal:
+P2P-main terminal:
 ```sh
 node index.js
 ```
