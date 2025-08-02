@@ -1,3 +1,5 @@
+//login page that allows users to enter username, password, and select cipher
+
 import { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import '../Styling/Login.css'
@@ -51,7 +53,7 @@ function Login() {
         <div className="Container">
             <div className = "SignInBlock">
                 <img src={logo} className="Logo" alt="logo" />
-                <h4 className="Title">Not Secure Secure Messaging</h4>
+                <h4 className="Title">4173 Messaging</h4>
                 <form onSubmit={signin} className="InputContainer">
                     <input id="Username" name="username" className="textbox" type="text" placeholder="Username" 
                     title="Name that will be displayed" required="" autoFocus="" onChange={changeUser}/>

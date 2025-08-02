@@ -1,3 +1,5 @@
+//main page that allows users to send and view messages
+
 import { useEffect, useState, useReducer } from 'react'
 import Gun from 'gun'
 import { useLocation, Navigate } from 'react-router-dom';

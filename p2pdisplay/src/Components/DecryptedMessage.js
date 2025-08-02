@@ -1,3 +1,5 @@
+// component that diplays an individual message in the messaging page
+
 import React from 'react';
 import CryptoJS from "crypto-js";
 
@@ -11,9 +13,9 @@ const DecryptedMessage = React.memo(({ message, password }) => {
     <div style={{ marginBottom: 20 }}>
       <h3>From: {message.name} on {new Date(message.createdAt).toLocaleString()}</h3>
       <h3 style={{ 
-      wordBreak: 'break-word', // Break long words
-      whiteSpace: 'pre-wrap',  // Preserve line breaks and wrap
-      overflowWrap: 'anywhere' // Fallback for better support
+      wordBreak: 'break-word',
+      whiteSpace: 'pre-wrap',
+      overflowWrap: 'anywhere'
     }} >{decryptedMessage}</h3>
       {file && (
         <div>

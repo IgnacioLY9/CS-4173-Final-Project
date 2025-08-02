@@ -1,3 +1,5 @@
+//component for sending voice messages
+
 import React, { useRef, useState } from 'react'
 
 function VoiceMessage

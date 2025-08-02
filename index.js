@@ -1,4 +1,4 @@
-// index.js
+// controls the backend express server
 const express = require('express')
 const Gun = require('gun');
 const app = express()
