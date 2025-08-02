@@ -1,7 +1,7 @@
 ## CS 4173 final project
 
 This is a simple messaging application to learn about encryption of messages and sensative information.
-User enter a username and a password. Users with the same password are entered into a group.
+User enters a username and a password. Users with the same password are entered into a group.
 Only people in the same group can send messages to each other.
 
 ### Setup
@@ -9,7 +9,7 @@ Only people in the same group can send messages to each other.
 1. Move to the unzipped directory.
 
 ```sh
-cd /path/to/unzipped/folder/P2P
+cd /path/to/unzipped/folder/P2P-MAIN
 ```
 
 2. Install the dependencies for the Express server
@@ -27,9 +27,9 @@ npm install
 
 4. Launching the application
 
-Open a second terminal. In one of the terminals, maneuver to the P2P directory. In the second, move to the P2P/p2pdisplay directory
+Open a second terminal. In one of the terminals, maneuver to the P2P-MAIN directory. In the second, move to the P2P-MAIN/p2pdisplay directory
 
-P2P terminal:
+P2P-MAIN terminal:
 ```sh
 node index.js
 ```
